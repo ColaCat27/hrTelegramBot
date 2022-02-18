@@ -35,7 +35,6 @@ const mainScene = new WizardScene(
 		}
 	},
 	(ctx) => {
-		console.log(ctx);
 		try {
 			if(ctx.message.text.length < 2 || /[^A-zА-я \-\s]/.test(ctx.message.text)) {
 				throw new Error();

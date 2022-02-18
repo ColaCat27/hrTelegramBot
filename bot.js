@@ -15,12 +15,11 @@ const mainScene = new WizardScene(
 			return ctx.wizard.next();
 		} catch(e) {
 			console.error(e);
-			ctx.scene.reenter();
-			return;
+			return ctx.scene.reenter();
 		}
 
     },
-	async (ctx) => {
+	(ctx) => {
 		try {
 			if(ctx.message.text.length < 2 || /[^A-zА-я \-\s]/.test(ctx.message.text)) {
 				throw new Error();
@@ -30,27 +29,29 @@ const mainScene = new WizardScene(
 			return ctx.wizard.next();
 		} catch(e) {
 			console.error(e);
-			await ctx.reply('Вы ввели неправильные данные, введите фамилию повторно');
-			ctx.wizard.back();
+			ctx.reply('Вы ввели неправильные данные, введите фамилию повторно');
+			ctx.wizard.selectStep(ctx.wizard.cursor);
 			return;
 		}
 	},
-	 async (ctx) => {
+	(ctx) => {
+		console.log(ctx);
 		try {
 			if(ctx.message.text.length < 2 || /[^A-zА-я \-\s]/.test(ctx.message.text)) {
 				throw new Error();
+			} else {
+				ctx.wizard.state.firstName = ctx.message.text;
+				ctx.reply('Дата рождения (дд.мм.гггг):');
+				return ctx.wizard.next();
 			}
-			ctx.wizard.state.firstName = ctx.message.text;
-			 ctx.reply('Дата рождения (дд.мм.гггг):');
-			return ctx.wizard.next();
 		} catch(e) {
 			console.error(e);
-			await ctx.reply('Вы ввели неправильные данные, введите имя повторно');
-			ctx.wizard.back()
+			ctx.reply('Вы ввели неправильные данные, введите имя повторно');
+			ctx.wizard.selectStep(ctx.wizard.cursor);
 			return;
 		}
 	},
-	 async (ctx) => {
+	(ctx) => {
 		try {
 			if(!/\d+\.\d+\.\d+/.test(ctx.message.text)) {
 				throw new Error();
@@ -80,13 +81,12 @@ const mainScene = new WizardScene(
 			return ctx.wizard.next();
 		} catch(e) {
 			console.error(e);
-			await ctx.reply('Введите правильные данные, пример (24.03.2000)');
-			ctx.wizard.back();
+			ctx.reply('Вы ввели неправильные данные, введите дату повторно, пример: 11.10.2000');
+			ctx.wizard.selectStep(ctx.wizard.cursor);
 			return;
 		}
-
 	},
-     async (ctx) => {
+    (ctx) => {
 		 try {
 			if(ctx.message) {
 				if(/[^A-zА-я \-\s]/.test(ctx.message.text)) {
@@ -114,13 +114,13 @@ const mainScene = new WizardScene(
 		   return ctx.wizard.next();
 		 } catch(e) {
 			 console.error(e);
-			 await ctx.reply('Вы ввели неправильные данные, выберите адрес или введите повторно');
-			 ctx.wizard.back();
+			 ctx.reply('Вы ввели неправильные данные, выберите адрес или введите повторно');
+			 ctx.wizard.selectStep(ctx.wizard.cursor);
 			 return;
 		 }
 
     },
-	async (ctx) => {
+	(ctx) => {
 		try {
 			if(ctx.message) {
 				throw new Error();
@@ -130,13 +130,13 @@ const mainScene = new WizardScene(
 			return ctx.wizard.next();
 		} catch(e) {
 			console.error(e)
-			await ctx.reply('Вы не выбрали уровень английского, пожалуйста выберите уровень повторно');
-			ctx.wizard.back();
+			ctx.reply('Вы не выбрали уровень английского, пожалуйста выберите уровень повторно');
+			ctx.wizard.selectStep(ctx.wizard.cursor);
 			return;
 		} 
 
 	},
-	async (ctx) => {
+	(ctx) => {
 		try {
 			if(ctx.message.text.length > 500) {
 				throw new Error();
@@ -164,12 +164,12 @@ const mainScene = new WizardScene(
 			  return ctx.wizard.next();
 		} catch(e) {
 			console.error(e);
-			await ctx.reply('Пожалуйста введите не больше 500 символов.');
-			ctx.wizard.back();
+			ctx.reply('Пожалуйста введите не больше 500 символов.');
+			ctx.wizard.selectStep(ctx.wizard.cursor);
 			return;
 		}
 	},
-	async (ctx) => {
+	(ctx) => {
 		try {
 			if(ctx.message.contact) {
 				ctx.wizard.state.phone = ctx.message.contact.phone_number;
@@ -185,8 +185,7 @@ const mainScene = new WizardScene(
 			return ctx.wizard.next();
 		}
 
-	}
-	,
+	},
 	(ctx) => {
 		ctx.scene.leave();
 	}

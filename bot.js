@@ -53,13 +53,14 @@ const mainScene = new WizardScene(
 	},
 	(ctx) => {
 		try {
+			let limit = new Date().getFullYear() - 15;
 			if(!/\d+\.\d+\.\d+/.test(ctx.message.text)) {
 				throw new Error();
 			} else {
 				let date = ctx.message.text.split('.');
 				if(date[0].length > 2 || date[1].length > 2 || date[2].length > 4) {
 					throw new Error();
-				} else if(date[2] < 1950 || date[2] > 2008) {
+				} else if(date[2] < 1950 || date[2] > limit) {
 					throw new Error();
 				} else if(date[0] <= 0 || date[0] > 31) {
 					throw new Error();
@@ -142,7 +143,7 @@ const mainScene = new WizardScene(
 				throw new Error();
 			}
 			ctx.wizard.state.previousExp = ctx.message.text;
-			ctx.reply("Ваш мобильный номер", {
+			ctx.reply("Ваш мобильный номер (Необязательно)", {
 				reply_markup: {
 				  keyboard: [
 					[
@@ -174,8 +175,21 @@ const mainScene = new WizardScene(
 			if(ctx.message.contact) {
 				ctx.wizard.state.phone = ctx.message.contact.phone_number;
 			}
-			ctx.wizard.state.username = ctx.update.message.from.username;
-			ctx.wizard.state.tgName = ctx.update.message.from.first_name;
+			if(ctx.update.message.from.username) {
+				ctx.wizard.state.username = ctx.update.message.from.username;
+			} else {
+				ctx.wizard.state.username = "";
+			}
+			if(ctx.update.message.from.first_name) {
+				ctx.wizard.state.tgName = ctx.update.message.from.first_name;
+			} else {
+				ctx.wizard.state.tgName = "";
+			}
+			if(ctx.update.message.from.last_name) {
+				ctx.wizard.state.tgLastName = ctx.update.message.from.last_name;
+			} else {
+				ctx.wizard.state.tgLastName = "";
+			}
 			
 			ctx.reply('Спасибо что заполнили анкету!👍');
 			saveData(ctx.wizard.state);

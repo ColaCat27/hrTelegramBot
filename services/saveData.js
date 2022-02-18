@@ -16,8 +16,7 @@ module.exports = async function saveData(data) {
         });
           
         await doc.loadInfo();
-            
-        await doc.sheetsByIndex[0].addRow({ 'Фамилия': data.lastName, 'Имя': data.firstName, 'Дата рождения': data.date, 'Город': data.city, 'Уровень английского': data.englishLevel, 'Опыт работы': data.previousExp, 'Telegram имя': data.tgName, 'Telegram username': data.username, 'Мобильный номер': data.phone, 'Дата заполнения': date()});
+        await doc.sheetsByIndex[0].addRow({ 'Фамилия': data.lastName, 'Имя': data.firstName, 'Дата рождения': data.date, 'Город': data.city, 'Уровень английского': data.englishLevel, 'Опыт работы': data.previousExp, 'Telegram имя': data.tgName + " " + data.tgLastName, 'Telegram username': data.username, 'Мобильный номер': data.phone, 'Дата заполнения': date()});
     
     } catch(e) {
         console.error('Ошибка отправки данных в таблицу');

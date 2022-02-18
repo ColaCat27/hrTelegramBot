@@ -5,7 +5,7 @@ const date = require('./date');
 module.exports = async function saveData(data) {
     try {
         const doc = new GoogleSpreadsheet(
-            '1eZ9z6ftuAxkD9l137CSmVwuWtzcETy4O1k4vkFKp5Ns'
+            process.env.ID
         );
     
          doc.useServiceAccountAuth({

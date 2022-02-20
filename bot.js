@@ -21,31 +21,36 @@ const mainScene = new WizardScene(
     },
 	(ctx) => {
 		try {
-			if(ctx.message.text.length < 2 || /[^A-zА-я \-\s]/.test(ctx.message.text)) {
-				throw new Error('Ошибка, ответ содержит неправильную фамилию');
+			if(ctx.message.text.length < 2) {
+				throw new Error('Ответ не может содержать одну букву. Пожалуйста введите ответ повторно');
+			} else if(/[^A-zА-я \-\s]/.test(ctx.message.text)) {
+				throw new Error('Ответ не может содержать спец. символы, пустую строку или цифры. Пожалуйста введите ответ повторно');
 			}
 			ctx.wizard.state.lastName = ctx.message.text;
 			ctx.reply('Введите имя:');
 			return ctx.wizard.next();
 		} catch(e) {
 			console.error(e.message);
-			ctx.reply(errors.wrongLength);
+			ctx.reply(e.message);
 			ctx.wizard.selectStep(ctx.wizard.cursor);
 			return;
 		}
 	},
 	(ctx) => {
 		try {
-			if(ctx.message.text.length < 2 || /[^A-zА-я \-\s]/.test(ctx.message.text)) {
-				throw new Error('Ошибка, ответ содержит неправльное имя');
-			} else {
-				ctx.wizard.state.firstName = ctx.message.text;
-				ctx.reply('Дата рождения (дд.мм.гггг):');
-				return ctx.wizard.next();
+			
+			if(ctx.message.text.length < 2) {
+				throw new Error('Ответ не может содержать одну букву. Пожалуйста введите ответ повторно');
+			} else if(/[^A-zА-я \-\s]/.test(ctx.message.text)) {
+				throw new Error('Ответ не может содержать спец. символы, пустую строку или цифры. Пожалуйста введите ответ повторно');
 			}
+
+			ctx.wizard.state.firstName = ctx.message.text;
+			ctx.reply('Дата рождения (дд.мм.гггг):');
+			return ctx.wizard.next();
 		} catch(e) {
 			console.error(e.message);
-			ctx.reply(errors.wrongLength);
+			ctx.reply(e.message);
 			ctx.wizard.selectStep(ctx.wizard.cursor);
 			return;
 		}
@@ -54,17 +59,17 @@ const mainScene = new WizardScene(
 		try {
 			let limit = new Date().getFullYear() - 10;
 			if(!/\d+\.\d+\.\d+/.test(ctx.message.text)) {
-				throw new Error('Ошибка, ответ содержит неправильную дату');
+				throw new Error('Ответ должен содержать дату в формате дд.мм.гггг, (пример: 10.10.1984). Пожалуйста введите дату повторно');
 			} else {
 				let date = ctx.message.text.split('.');
 				if(date[0].length > 2 || date[1].length > 2 || date[2].length > 4) {
-					throw new Error('Ошибка, ответ неподходит по формату');
+					throw new Error('Ответ должен содержать дату в формате дд.мм.гггг, (пример: 10.10.1984). Пожалуйста введите дату повторно');
 				} else if(date[2] < 1950 || date[2] > limit) {
-					throw new Error('Ошибка, ответ содержит неподходящий год');
+					throw new Error(`Год не может быть меньше 1950 или больше ${limit}. Пожалуйста введите дату повторно`);
 				} else if(date[0] <= 0 || date[0] > 31) {
-					throw new Error('Ошибка, ответ содержит неправильный день');
+					throw new Error('День не может быть 0 или больше 31. Пожалуйста введите дату повторно');
 				} else if(date[1] <= 0 || date[1] > 12) {
-					throw new Error('Ошибка, ответ содержит неправильный месяц');
+					throw new Error('Месяц не может быть 0 или больше 12. Пожалуйста введите дату повторно');
 				}
 			}
 			ctx.wizard.state.date = ctx.message.text;
@@ -81,7 +86,7 @@ const mainScene = new WizardScene(
 			return ctx.wizard.next();
 		} catch(e) {
 			console.error(e.message);
-			ctx.reply(errors.wrongDate);
+			ctx.reply(e.message);
 			ctx.wizard.selectStep(ctx.wizard.cursor);
 			return;
 		}
@@ -90,7 +95,7 @@ const mainScene = new WizardScene(
 		 try {
 			if(ctx.message) {
 				if(/[^A-zА-я \-\s]/.test(ctx.message.text)) {
-					throw new Error('Ошибка, город не может содержать спец. символы');
+					throw new Error('Название города не может содержать спец. символы. Пожалуйста введите название повторно');
 				} else {
 					ctx.wizard.state.city = ctx.message.text;
 				}
@@ -114,7 +119,7 @@ const mainScene = new WizardScene(
 		   return ctx.wizard.next();
 		 } catch(e) {
 			 console.error(e.message);
-			 ctx.reply(errors.wrongCity);
+			 ctx.reply(e.message);
 			 ctx.wizard.selectStep(ctx.wizard.cursor);
 			 return;
 		 }
@@ -123,7 +128,7 @@ const mainScene = new WizardScene(
 	(ctx) => {
 		try {
 			if(ctx.message) { 
-				throw new Error('Ошибка, не выбран уровень английского');
+				throw new Error('Вы не выбрали уровень английского. Пожалуйста выберите ответ повторно');
 			}
 			ctx.wizard.state.englishLevel = ctx.update.callback_query.data;
 			ctx.reply('Опишите предыдущий опыт работы (От 100 до 500 символов):', {
@@ -142,7 +147,7 @@ const mainScene = new WizardScene(
 			return ctx.wizard.next();
 		} catch(e) {
 			console.error(e)
-			ctx.reply(errors.wrongLang);
+			ctx.reply(e.message);
 			ctx.wizard.selectStep(ctx.wizard.cursor);
 			return;
 		} 
@@ -151,8 +156,11 @@ const mainScene = new WizardScene(
 	(ctx) => {
 		try {
 			if(ctx.message.text != "У меня нету опыта работы") {
-				if(ctx.message.text.length < 100 || ctx.message.text.length > 500) { 
-					throw new Error('Ошибка, неправильная длина ответа (Опыт работы)'); 
+				if(ctx.message.text.length < 100) {
+					throw new Error('Ответ не может быть меньше 100 символов. Пожалуйста введите более развернутый ответ (Не более 500 символов)'); 
+				} 
+				if(ctx.message.text.length > 500) { 
+					throw new Error('Ответ не может быть больше 500 символов. Пожалуйста введите более короткий ответ (Не менее 100 символов)'); 
 				}
 			}
 			ctx.wizard.state.previousExp = ctx.message.text;
@@ -178,8 +186,7 @@ const mainScene = new WizardScene(
 			  return ctx.wizard.next();
 		} catch(e) {
 			console.error(e.message);
-			if(ctx.message.text.length < 100) ctx.reply(errors.wrongExp.short)
-			if(ctx.message.text.length > 500) ctx.reply(errors.wrongExp.long)
+			ctx.reply(e.message);
 			ctx.wizard.selectStep(ctx.wizard.cursor);
 			return;
 		}

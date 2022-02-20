@@ -3,7 +3,6 @@ require('dotenv').config();
 const { Telegraf, session, Scenes: { WizardScene, Stage } } = require('telegraf');
 
 const saveData = require('./services/saveData');
-const errors = require('./services/errors');
 
 const bot = new Telegraf(process.env.TOKEN);
 
@@ -38,7 +37,7 @@ const mainScene = new WizardScene(
 	},
 	(ctx) => {
 		try {
-			
+
 			if(ctx.message.text.length < 2) {
 				throw new Error('Ответ не может содержать одну букву. Пожалуйста введите ответ повторно');
 			} else if(/[^A-zА-я \-\s]/.test(ctx.message.text)) {

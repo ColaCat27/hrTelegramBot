@@ -76,8 +76,8 @@ const mainScene = new WizardScene(
 				reply_markup: {
 					inline_keyboard: [
 						[
-							{ text: 'Москва', callback_data: 'Москва' },
-							{ text: 'Санкт-Петербург', callback_data: 'Санкт-Петербург' }
+							{ text: 'Kyiv', callback_data: 'Киев' },
+							{ text: 'Lviv', callback_data: 'Львов' }
 						],
 					],
 				},
